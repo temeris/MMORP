@@ -1,6 +1,10 @@
 canvas {
 
     border: 1px solid black;
+    width : 750px;
+    height: 650px;
+    display : block;
+    margin : auto;
 	
 }
 
