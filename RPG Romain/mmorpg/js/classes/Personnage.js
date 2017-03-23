@@ -120,6 +120,12 @@ Personnage.prototype.deplacer = function(direction, map) {
         // Ça ne coute pas cher et ca peut toujours servir
         return false;
     }
+	
+ //On empeche le mouvement en cas de présence d'un obstacle
+	if(map.terrain[prochaineCase.y][prochaineCase.x]==1)
+	{
+	return false;
+	}
     
 	// On commence l'animation
 	this.etatAnimation = 1;
