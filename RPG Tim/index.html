@@ -9,66 +9,50 @@
 
 	<body>
         <script src="/socket.io/socket.io.js"></script>
-		<h1 style="text-align: center">WORLD OF ROTI</h1>
+		<h1 style="text-align:center">WORLD OF ROTI</h1>
 		<canvas id="myCanvas">	
 			<script>
 				var socket = io.connect('http://localhost:8080');
-				var c = document.getElementById("myCanvas");
-				var ctx = c.getContext("2d");
-				var Player = {x:10, y:10,oldx:10,oldy:10,newx:10,newy:10};
-				var player = Object.create(Player);
-				ctx.fillStyle="black";
-				ctx.fillRect(player.x,player.y,10,10);
+				var canvas = document.getElementById('myCanvas');
+				var ctx = canvas.getContext("2d");
 				
-				function getMousePos(canvas, evt) {
-						var rect = canvas.getBoundingClientRect();
-						return {
-							x: evt.clientX - rect.left,
-							y: evt.clientY - rect.top
-						};
-					}
-					
-				
-					
-				 var canvas = document.getElementById('myCanvas');
-				 canvas.onclick = function(evt){
-					var data = getMousePos(canvas, evt);
-					player.oldx= player.x;
-					player.oldy= player.y;
-					player.newx= (data.x);
-					player.newy= (data.y);
-					
-					
-					var inter = setInterval(function()
-					{
-						if( Math.sqrt((player.newx-player.x)*(player.newx-player.x)) > 1 || Math.sqrt((player.newy-player.y)*(player.newy-player.y)) > 1)
-						{
-							player.x += 10;
-							player.y += 10;
-						}
-						else clearInterval(inter);
-						
-						ctx.clearRect(0,0,canvas.width,canvas.height);
-						ctx.fillRect(player.x,player.y,10,10);
-						socket.emit('mouvement', player);
-					}, 1000/30);
-					
-					
-					
+				socket.on('lancement', function(player){
+					player.name = prompt("Pseudo ?");
+					socket.emit('reponse',player,ctx,canvas);
+					socket.emit('init_position_depart',player);
+				});
+				socket.on('ma_position',function(player){
+					ctx.fillStyle="blue";
+					ctx.fillRect(player.x,player.y,10,10);
+				});
+				socket.on('position_depart_players',function(player){
+					ctx.fillStyle="black";
+					ctx.fillRect(player.x,player.y,10,10);
+				});
+				canvas.onclick = function(evt){
+					var data = getMousePos(canvas,evt);
+					socket.emit('action',data);
 				}
-				socket.on('mouvement',function(player){
+				function getMousePos(canvas, evt) {
+					var rect = canvas.getBoundingClientRect();
+					return {
+						x: evt.clientX - rect.left,
+						y: evt.clientY - rect.top
+					};
+				}
+				
+				socket.on('mouvement_pour_moi',function(player){
 					ctx.clearRect(0,0,canvas.width,canvas.height);
+					ctx.fillStyle="blue";
+					ctx.fillRect(player.x,player.y,10,10);
+				});
+				socket.on('mouvement_pour_autres',function(player){
+					ctx.clearRect(0,0,canvas.width,canvas.height);
+					ctx.fillStyle="black";
 					ctx.fillRect(player.x,player.y,10,10);
 				});
 				
-				
-			
-			
-			</script>
-			
-			
-		</canvas>
-		
-		
+					</script>
+		</canvas>	
 	</body>
 </html>
