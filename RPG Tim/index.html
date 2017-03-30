@@ -25,12 +25,16 @@
 					ctx.fillStyle="blue";
 					ctx.fillRect(player.x,player.y,10,10);
 				});
-				socket.on('position_depart_players',function(player){
+				socket.on('ma position_pour_autres',function(player){
 					ctx.fillStyle="black";
 					ctx.fillRect(player.x,player.y,10,10);
 				});
+				//~ socket.on('gimme_your_position',function(){
+					//~ socket.emit('ma_position')
+				});
 				canvas.onclick = function(evt){
 					var data = getMousePos(canvas,evt);
+					//~ ctx.clearRect(0, 0, canvas.width, canvas.height);
 					socket.emit('action',data);
 				}
 				function getMousePos(canvas, evt) {
@@ -40,19 +44,7 @@
 						y: evt.clientY - rect.top
 					};
 				}
-				
-				socket.on('mouvement_pour_moi',function(player){
-					ctx.clearRect(0,0,canvas.width,canvas.height);
-					ctx.fillStyle="blue";
-					ctx.fillRect(player.x,player.y,10,10);
-				});
-				socket.on('mouvement_pour_autres',function(player){
-					ctx.clearRect(0,0,canvas.width,canvas.height);
-					ctx.fillStyle="black";
-					ctx.fillRect(player.x,player.y,10,10);
-				});
-				
-					</script>
+			</script>
 		</canvas>	
 	</body>
 </html>

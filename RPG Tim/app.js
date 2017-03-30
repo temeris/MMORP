@@ -9,11 +9,6 @@ function Player()
 {
 	this.x;
 	this.y;
-	this.oldx;
-	this.oldy;
-	this.newx;
-	this.newy;
-	this.name;
 };
 
 io.sockets.on('connection', function(socket){
@@ -29,15 +24,17 @@ io.sockets.on('connection', function(socket){
 		player.y = 10;
 		socket.player = player;
 		socket.emit('ma_position',player);
-		socket.broadcast.emit('position_depart_players',player);
+		socket.broadcast.emit('ma position_pour_autres',player);
+		//~ socket.broadcast.emit('ma position');
 	});
 	socket.on('action',function(data){
 		player.x = data.x;
 		player.y = data.y;
 		socket.player = player;
-		socket.emit('mouvement_pour_moi', player);
-		socket.broadcast.emit('mouvement_pour_autres', player);
-		io.sockets.clients().forEach(function (socket) { .. });
+		Object.keys(io.sockets.sockets).forEach(function(id){
+			socket.emit('ma_position',player);
+			socket.broadcast.emit('ma position_pour_autres',player);
+		});
 	});
 });
 
