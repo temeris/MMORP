@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+
+<html>
+	<head>
+		<title>Projet MMORPG</title>
+		<meta charset="utf-8"/>
+		<link rel="stylesheet" type="text/css" href="/test.css"/>
+	</head>
+
+	<body>
+        <script src="/socket.io/socket.io.js"></script>
+		<h1 style="text-align: center">WORLD OF ROTI</h1>
+		<canvas id="myCanvas">	
+			<script>
+				var socket = io.connect('http://localhost:8080');
+				var c = document.getElementById("myCanvas");
+				var ctx = c.getContext("2d");
+				var Player = {x:10, y:10,oldx:10,oldy:10,newx:10,newy:10};
+				var player = Object.create(Player);
+				ctx.fillStyle="black";
+				ctx.fillRect(player.x,player.y,10,10);
+				
+				function getMousePos(canvas, evt) {
+						var rect = canvas.getBoundingClientRect();
+						return {
+							x: evt.clientX - rect.left,
+							y: evt.clientY - rect.top
+						};
+					}
+					
+				
+					
+				 var canvas = document.getElementById('myCanvas');
+				 canvas.onclick = function(evt){
+					var data = getMousePos(canvas, evt);
+					player.oldx= player.x;
+					player.oldy= player.y;
+					player.newx= (data.x);
+					player.newy= (data.y);
+					
+					
+					var inter = setInterval(function()
+					{
+						if( Math.sqrt((player.newx-player.x)*(player.newx-player.x)) > 1 || Math.sqrt((player.newy-player.y)*(player.newy-player.y)) > 1)
+						{
+							player.x += 10;
+							player.y += 10;
+						}
+						else clearInterval(inter);
+						
+						ctx.clearRect(0,0,canvas.width,canvas.height);
+						ctx.fillRect(player.x,player.y,10,10);
+						socket.emit('mouvement', player);
+					}, 1000/30);
+					
+					
+					
+				}
+				socket.on('mouvement',function(player){
+					ctx.clearRect(0,0,canvas.width,canvas.height);
+					ctx.fillRect(player.x,player.y,10,10);
+				});
+				
+				
+			
+			
+			</script>
+			
+			
+		</canvas>
+		
+		
+	</body>
+</html>
