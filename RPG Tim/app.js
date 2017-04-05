@@ -11,6 +11,9 @@ function Player()
 	this.y;
 };
 
+
+//~ mouvement : effacer tous les  canvas, actualiser sa position,
+//~ dire aux autre client d'actualiser leurs positions
 io.sockets.on('connection', function(socket){
 	var player = new Player();
 	socket.emit('lancement', player);
@@ -23,19 +26,17 @@ io.sockets.on('connection', function(socket){
 		player.x = 10;
 		player.y = 10;
 		socket.player = player;
-		socket.emit('ma_position',player);
-		socket.broadcast.emit('ma position_pour_autres',player);
-		//~ socket.broadcast.emit('ma position');
 	});
-	socket.on('action',function(data){
+	socket.on('move',function(data){
 		player.x = data.x;
 		player.y = data.y;
 		socket.player = player;
-		Object.keys(io.sockets.sockets).forEach(function(id){
-			socket.emit('ma_position',player);
-			socket.broadcast.emit('ma position_pour_autres',player);
-		});
+		io.emit('ask_update');
 	});
+	socket.on('send_update',function(){
+		io.emit('update_position',socket.player);
+	});
+	
 });
 
 server.listen(8080);

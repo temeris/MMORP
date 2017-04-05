@@ -21,21 +21,22 @@
 					socket.emit('reponse',player,ctx,canvas);
 					socket.emit('init_position_depart',player);
 				});
-				socket.on('ma_position',function(player){
-					ctx.fillStyle="blue";
-					ctx.fillRect(player.x,player.y,10,10);
+				socket.on('ask_update',function(){
+					ctx.clearRect(0, 0, canvas.width, canvas.height);
+					socket.emit('send_update');
 				});
-				socket.on('ma position_pour_autres',function(player){
-					ctx.fillStyle="black";
-					ctx.fillRect(player.x,player.y,10,10);
+				socket.on('update_position',function(player){
+					function draw_player(player)
+					{
+						ctx.rect(player.x,player.y,10,10);
+						ctx.stroke();
+					}
 				});
-				//~ socket.on('gimme_your_position',function(){
-					//~ socket.emit('ma_position')
-				});
+				
+				
 				canvas.onclick = function(evt){
 					var data = getMousePos(canvas,evt);
-					//~ ctx.clearRect(0, 0, canvas.width, canvas.height);
-					socket.emit('action',data);
+					socket.emit('move',data);
 				}
 				function getMousePos(canvas, evt) {
 					var rect = canvas.getBoundingClientRect();
