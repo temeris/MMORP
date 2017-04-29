@@ -11,16 +11,14 @@
 	<body>
         <script src="/socket.io/socket.io.js"></script>
 		<h1 style="text-align:center">WORLD OF ROTI</h1>
-		<canvas id="myCanvas">	
+		 <canvas id="myCanvas" width="800" height="400">	
 			<script>
 				var socket = io.connect('http://localhost:8080');
 				var canvas = document.getElementById('myCanvas');
 				var ctx = canvas.getContext("2d");
-				canvas.width = 800;
-				canvas.height = 400;
 				
 				var dataL;
-				var tiresL[];
+				var tiresL=[];
 				socket.on('lancement', function(data){
 					dataL=data;
 					dataL.player.name = prompt("Pseudo ?");
