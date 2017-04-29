@@ -5,70 +5,140 @@
 		<title>Projet MMORPG</title>
 		<meta charset="utf-8"/>
 		<link rel="stylesheet" type="text/css" href="/test.css"/>
+		<script type="text/javascript" src="/gameplay.js"></script>
 	</head>
 
 	<body>
         <script src="/socket.io/socket.io.js"></script>
-		<h1 style="text-align: center">WORLD OF ROTI</h1>
+		<h1 style="text-align:center">WORLD OF ROTI</h1>
 		<canvas id="myCanvas">	
 			<script>
 				var socket = io.connect('http://localhost:8080');
-				var c = document.getElementById("myCanvas");
-				var ctx = c.getContext("2d");
-				var Player = {x:10, y:10,oldx:10,oldy:10,newx:10,newy:10};
-				var player = Object.create(Player);
-				ctx.fillStyle="black";
-				ctx.fillRect(player.x,player.y,10,10);
+				var canvas = document.getElementById('myCanvas');
+				var ctx = canvas.getContext("2d");
+				canvas.width = 800;
+				canvas.height = 400;
 				
-				function getMousePos(canvas, evt) {
-						var rect = canvas.getBoundingClientRect();
-						return {
-							x: evt.clientX - rect.left,
-							y: evt.clientY - rect.top
-						};
-					}
-					
-				
-					
-				 var canvas = document.getElementById('myCanvas');
-				 canvas.onclick = function(evt){
-					var data = getMousePos(canvas, evt);
-					player.oldx= player.x;
-					player.oldy= player.y;
-					player.newx= (data.x);
-					player.newy= (data.y);
-					
-					
-					var inter = setInterval(function()
-					{
-						if( ((player.newx-player.x)*(player.newx-player.x)) > 1 || ((player.newy-player.y)*(player.newy-player.y)) > 1)
-						{
-							player.x += (player.newx-player.oldx)/100;
-							player.y += (player.newy-player.oldy)/100;
-						}
-						else clearInterval(inter);
-						
-						ctx.clearRect(0,0,canvas.width,canvas.height);
-						ctx.fillRect(player.x,player.y,10,10);
-						socket.emit('mouvement', player);
-					}, 1000/30);
-					
-					
-					
-				}
-				socket.on('mouvement',function(player){
-					ctx.clearRect(0,0,canvas.width,canvas.height);
-					ctx.fillRect(player.x,player.y,10,10);
+				var dataL;
+				var tiresL[];
+				socket.on('lancement', function(data){
+					dataL=data;
+					dataL.player.name = prompt("Pseudo ?");
+					socket.emit('reponse',dataL.player);
 				});
 				
+				socket.on('update_data',function(map){
+					dataL.map = map;
+				});
 				
-			
-			
+				socket.on('update_screen', function(player){
+					ctx.clearRect(20*player.oldx - 1, 20*player.oldy - 1, 22, 22);
+					socket.emit('send_update');
+				});
+				
+				socket.on('delete_player', function(map,player){
+					dataL.map = map;
+					ctx.clearRect(20*player.x - 1, 20*player.y - 1, 22, 22);
+				});
+				
+				socket.on('update_my_position', function(player){
+					ctx.fillStyle="blue";
+					drawPlayer(player);
+				});
+				socket.on('update_my_position_for_others', function(player){
+					ctx.fillStyle="red";
+					drawPlayer(player);
+				});
+				
+				document.onkeydown = function(event)
+				{
+					var key_pressed;
+					var x = 0, y = 0, mouvement = 0;
+					var direction = dataL.player.direction;
+					if(event == null){
+						key_pressed = window.event.keyCode;
+					}
+					else
+					{
+						key_pressed =  event.keyCode || event.which;
+					}
+					switch(key_pressed)
+					{
+						case 37:
+						{
+							x = -1;
+							direction = 0;
+							mouvement = 1;
+							break;
+						}
+						case 38:
+						{
+							y = -1;
+							direction = 1;
+							mouvement = 1;
+							break;
+						}
+						case 39:
+						{
+							x = 1;
+							direction = 2;
+							mouvement = 1;
+							break;
+						}
+						case 40:
+						{
+							y = 1;
+							direction = 3;
+							mouvement = 1;
+							break;
+						}
+						case 32:
+						{
+							//~ var tire = new createTire();
+							//~ tiresL.push(tire);
+							
+							//~ Voir comment gérer la création, déplacement des tires !
+							
+							mouvement = 0;
+							break;
+						}
+						default :
+						{
+							mouvement = 0;
+							break;
+						}
+					}
+					if(dataL.player.direction == direction && mouvement == 1)
+					{
+						if(dataL.player.x + x < 0 || dataL.player.x + x >= 40 || dataL.player.y + y < 0 || dataL.player.y + y >= 20)
+						{
+							
+						}
+						else 
+						{
+							if(dataL.map[dataL.player.x + x][dataL.player.y + y] == 0)
+							{
+								dataL.map[dataL.player.x][dataL.player.y] = 0;
+								dataL.player.oldx = dataL.player.x;
+								dataL.player.oldy = dataL.player.y;
+								dataL.player.x += x;
+								dataL.player.y += y;
+								dataL.map[dataL.player.x][dataL.player.y] = 1;
+								socket.emit('move',dataL);
+							}
+							else
+							{
+								
+							}
+						}
+					}
+					else if(dataL.player.direction != direction && mouvement == 1)
+					{
+						dataL.player.direction = direction;
+						socket.emit('move',dataL);
+					}
+				}
 			</script>
-			
-			
-		</canvas>
-		
-		
+		</canvas>	
 	</body>
 </html>
