@@ -11,6 +11,7 @@ var map = new modules.Map();
 
 var allClients = [];
 var tires = [];
+var immune = [];
 
 io.sockets.on('connection', function(socket){
 	allClients.push(socket);
@@ -45,8 +46,9 @@ io.sockets.on('connection', function(socket){
 	});
 	
 	socket.on('disconnect', function(){
-		socket.broadcast.emit('delete_player',map,socket.player);
+		console.log('Deconnexion');
 		map[socket.player.x][socket.player.y]=0;
+		socket.broadcast.emit('delete_player',map,socket.player);
 		var i = allClients.indexOf(socket);
 		allClients.splice(i,1);
 	});

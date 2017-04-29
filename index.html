@@ -92,10 +92,11 @@
 						}
 						case 32:
 						{
-							//~ var tire = new createTire();
-							//~ tiresL.push(tire);
+							var tir = new Tir(dataL.player.x,dataL.player.y,dataL.player.direction);
+							// tiresL.push(tir);
+
 							
-							//~ Voir comment gérer la création, déplacement des tires !
+							//~ Voir comment gérer la création, déplacement des tirs !
 							
 							mouvement = 0;
 							break;
@@ -114,7 +115,7 @@
 						}
 						else 
 						{
-							if(dataL.map[dataL.player.x + x][dataL.player.y + y] == 0)
+							if(dataL.map[dataL.player.x + x][dataL.player.y + y] != 1)
 							{
 								dataL.map[dataL.player.x][dataL.player.y] = 0;
 								dataL.player.oldx = dataL.player.x;
@@ -122,12 +123,24 @@
 								dataL.player.x += x;
 								dataL.player.y += y;
 								dataL.map[dataL.player.x][dataL.player.y] = 1;
+
+								if(dataL.map[dataL.player.x + x][dataL.player.y + y] == 2)		// On marche sur une case vie
+								{
+									if(data.player.health < 3)
+									{
+										data.player.health++;
+										dataL.map[dataL.player.x + x][dataL.player.y + y] = 0;
+									}
+								}
+								if(dataL.map[dataL.player.x + x][dataL.player.y + y] == 3)		// On marche sur une case immunité
+								{
+									//Rendre le perso invincible ici
+									dataL.map[dataL.player.x + x][dataL.player.y + y] = 0;
+								}
 								socket.emit('move',dataL);
 							}
-							else
-							{
-								
-							}
+							
+
 						}
 					}
 					else if(dataL.player.direction != direction && mouvement == 1)

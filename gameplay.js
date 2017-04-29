@@ -75,21 +75,15 @@ function drawPlayer(player){
 	ctx.fill();
 };
 	
-function createTire(data)
-{
-	var tire = new Tire(player.x,player.y,direction);
-	moveTire();
-	
-}
 
-function Tire(x,y,direction)
+function Tir(x,y,direction)
 {
 	this.x=x;
 	this.y=y;
 	this.direction = direction;
 }
 
-function moveTire()
+function moveTir()
 {
 	return;
 }
