@@ -53,6 +53,6 @@ La map, les personnages présents sur le jeu ainsi que leur position sont stock�
 Le serveur s'occupe alors de mémoriser toutes les informations reçu et de faire les liaisons entre les différents joueurs, l'affichage se fait du côté client.
 
 ## Sources
- http://www.demonixis.net/blog/un-micro-fps-en-javascript-avec-babylonjs/.
- https://www.w3schools.com/.
- https://socket.io/.
+ http://www.demonixis.net/blog/un-micro-fps-en-javascript-avec-babylonjs/    
+ https://www.w3schools.com/    
+ https://socket.io/    
