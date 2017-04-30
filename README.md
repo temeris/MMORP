@@ -2,7 +2,7 @@
 
 Ce jeu est un jeu de tir multijoueur où les joueurs s'affrontent sur une petite carte.
 
-## Rules
+## BUt du Jeu
 
   Vous contrôlez un personnage représenté par un cercle de couleur bleu et un petit cercle noir indiquant la direction dans laquelle vous regardez. Les adversaires eux, apparaîtront en rouge. Vous disposez de 3 points de vies, et vous pouvez tirer sur vos ennemies afin de les éliminer. Le but du jeu est donc de rester en vie tout en éliminant ses adversaires.
 
