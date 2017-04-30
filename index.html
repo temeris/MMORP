@@ -11,48 +11,82 @@
 	<body>
         <script src="/socket.io/socket.io.js"></script>
 		<h1 style="text-align:center">WORLD OF ROTI</h1>
-		 <canvas id="myCanvas" width="800" height="400">	
+		<canvas id="myCanvas" width="800" height="400">	
 			<script>
 				var socket = io.connect('http://localhost:8080');
 				var canvas = document.getElementById('myCanvas');
 				var ctx = canvas.getContext("2d");
 				
 				var dataL;
-				var tiresL=[];
-				socket.on('lancement', function(data){
+				var shotsL = [];
+				socket.on('launch', function(data){
 					dataL=data;
 					dataL.player.name = prompt("Pseudo ?");
 					socket.emit('reponse',dataL.player);
 				});
 				
-				socket.on('update_data',function(map){
+				socket.on('update_map',function(map){
 					dataL.map = map;
+					var i,j;
+					for(i=0;i<40;i++)
+					{
+						for(j=0;j<20;j++)
+						{
+							if(dataL.map[i][j] == 2)
+							{
+								drawLife();
+							}
+						}
+					}
 				});
 				
 				socket.on('update_screen', function(player){
-					ctx.clearRect(20*player.oldx - 1, 20*player.oldy - 1, 22, 22);
+					if(player) ctx.clearRect(20*player.oldx, 20*player.oldy, 20, 20);
 					socket.emit('send_update');
 				});
 				
-				socket.on('delete_player', function(map,player){
+				socket.on('delete_player_from_screen', function(map,player){
 					dataL.map = map;
-					ctx.clearRect(20*player.x - 1, 20*player.y - 1, 22, 22);
+					if(player.x && player.y) ctx.clearRect(20*player.x, 20*player.y, 20, 20);
+				});
+				
+				socket.on('delete_player_dataL',function(){
+					dataL.player = null;
 				});
 				
 				socket.on('update_my_position', function(player){
 					ctx.fillStyle="blue";
-					drawPlayer(player);
+					if(player) drawPlayer(player);
 				});
 				socket.on('update_my_position_for_others', function(player){
 					ctx.fillStyle="red";
-					drawPlayer(player);
+					if(player) drawPlayer(player);
+				});
+				
+				socket.on('show_shot',function(shot){
+					if(shot) drawShot(shot);
+				});
+				
+				socket.on('hit_player',function(){
+					dataL.player.health -= 1;
+					socket.emit('update_player',dataL);
+					if(dataL.player.health <= 0)
+					{
+						socket.emit('player_dead',dataL.player)
+					}
+				});
+				
+				socket.on('erase_shot',function(shot){
+					if(shot) deleteShot(shot);
 				});
 				
 				document.onkeydown = function(event)
 				{
 					var key_pressed;
-					var x = 0, y = 0, mouvement = 0;
-					var direction = dataL.player.direction;
+					var x = 0, y = 0;
+					var direction;
+					if(dataL.player) direction = dataL.player.direction;
+					else direction = 2;
 					if(event == null){
 						key_pressed = window.event.keyCode;
 					}
@@ -66,84 +100,53 @@
 						{
 							x = -1;
 							direction = 0;
-							mouvement = 1;
 							break;
 						}
 						case 38:
 						{
 							y = -1;
 							direction = 1;
-							mouvement = 1;
 							break;
 						}
 						case 39:
 						{
 							x = 1;
 							direction = 2;
-							mouvement = 1;
 							break;
 						}
 						case 40:
 						{
 							y = 1;
 							direction = 3;
-							mouvement = 1;
 							break;
 						}
 						case 32:
 						{
-							var tir = new Tir(dataL.player.x,dataL.player.y,dataL.player.direction);
-							// tiresL.push(tir);
-
-							
-							//~ Voir comment gérer la création, déplacement des tirs !
-							
-							mouvement = 0;
+							createShot(dataL.player);
 							break;
 						}
 						default :
 						{
-							mouvement = 0;
 							break;
 						}
 					}
-					if(dataL.player.direction == direction && mouvement == 1)
+					if(dataL.player.direction == direction)
 					{
-						if(dataL.player.x + x < 0 || dataL.player.x + x >= 40 || dataL.player.y + y < 0 || dataL.player.y + y >= 20)
+						if(!(dataL.player.x + x < 0 || dataL.player.x + x >= 40 || dataL.player.y + y < 0 || dataL.player.y + y >= 20)) 
 						{
-							
-						}
-						else 
-						{
-							if(dataL.map[dataL.player.x + x][dataL.player.y + y] != 1)
+							if(dataL.map[dataL.player.x + x][dataL.player.y + y] == 0)
 							{
 								dataL.map[dataL.player.x][dataL.player.y] = 0;
 								dataL.player.oldx = dataL.player.x;
 								dataL.player.oldy = dataL.player.y;
 								dataL.player.x += x;
 								dataL.player.y += y;
-								dataL.map[dataL.player.x][dataL.player.y] = 1;
-
-								if(dataL.map[dataL.player.x + x][dataL.player.y + y] == 2)		// On marche sur une case vie
-								{
-									if(data.player.health < 3)
-									{
-										data.player.health++;
-										dataL.map[dataL.player.x + x][dataL.player.y + y] = 0;
-									}
-								}
-								if(dataL.map[dataL.player.x + x][dataL.player.y + y] == 3)		// On marche sur une case immunité
-								{
-									//Rendre le perso invincible ici
-									dataL.map[dataL.player.x + x][dataL.player.y + y] = 0;
-								}
+								dataL.map[dataL.player.x][dataL.player.y] = dataL.player;
 								socket.emit('move',dataL);
 							}
-							
-
 						}
 					}
-					else if(dataL.player.direction != direction && mouvement == 1)
+					else if(dataL.player.direction != direction)
 					{
 						dataL.player.direction = direction;
 						socket.emit('move',dataL);

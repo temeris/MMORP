@@ -10,14 +10,19 @@ var modules = require("./gameplay.js");
 var map = new modules.Map();
 
 var allClients = [];
-var tires = [];
-var immune = [];
+var immunities = [];
+
+var objects;
+//~ modules.Immunity(map);
+modules.Life(map);
 
 io.sockets.on('connection', function(socket){
 	allClients.push(socket);
 	var player = modules.placerPlayer(map);
+	player.id=socket.id;
+	socket.player = player;
 	
-	socket.emit('lancement',{map,player});
+	socket.emit('launch',{map,player});
 	
 	socket.on('reponse',function(playerL){
 		player = playerL;
@@ -29,15 +34,35 @@ io.sockets.on('connection', function(socket){
 		player = data.player;
 		socket.player = player;
 		map = data.map;
-		for(i=0;i<40;i++)
-		{
-			for(j=0;j<20;j++)
-			{
-				if(map[i][j] != 0)console.log('serveur : i:',i,'j:',j);
-			}
-		}
-		io.emit('update_data',map);
+		io.emit('update_map',map);
 		io.emit('update_screen',player);
+	});
+	
+	socket.on('update_player',function(data){
+		player = data.player;
+		socket.player = player;
+	});
+	
+	socket.on('draw_shot',function(mapL,shot){
+		map = mapL;
+		io.emit('show_shot',shot);
+	});
+	
+	socket.on('player_dead',function(){
+		map[player.x][player.y] = 0;
+		io.emit('delete_player_from_screen',map,player);
+		player = null;
+		socket.player = null;
+		socket.emit('delete_player_dataL');
+	});
+	
+	socket.on('delete_shot',function(mapL,shot){
+		map = mapL;
+		io.emit('erase_shot',shot);
+	});
+	
+	socket.on('hit',function(id){
+		socket.broadcast.to(id).emit('hit_player');
 	});
 	
 	socket.on('send_update',function(){
@@ -46,9 +71,11 @@ io.sockets.on('connection', function(socket){
 	});
 	
 	socket.on('disconnect', function(){
-		console.log('Deconnexion');
-		map[socket.player.x][socket.player.y]=0;
-		socket.broadcast.emit('delete_player',map,socket.player);
+		if(player)
+		{
+			map[player.x][player.y]=0;
+			socket.broadcast.emit('delete_player',map,player);
+		}
 		var i = allClients.indexOf(socket);
 		allClients.splice(i,1);
 	});

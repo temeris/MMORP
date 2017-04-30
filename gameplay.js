@@ -28,7 +28,7 @@ module.exports.placerPlayer = function(map)
 		}
 		while(map[x][y] != 0);
 		var player = new Player(x,y);
-		map[x][y] = 1;
+		map[x][y] = player;
 		return player;
 	}
 }
@@ -44,14 +44,42 @@ function Player(x,y)
 	this.name="";
 };
 
-function Immunity()
+module.exports.Immunity = function() 
 {
-	var immunities = new Array();
+	if(immunity_on_map == true) return false;
+	setTimout(function(){
+		
+	},30000);
+	clearTimout();
+}
+
+module.exports.Life = function(map)
+{
+	var timerLife = setInterval(function(){
+		do
+		{
+			var x = Math.floor(Math.random()*40);
+			var y = Math.floor(Math.random()*20);
+		}
+		while(map[x][y] != 0);
+		map[x][y]=2;
+		clearInterval(timerLife);
+	},3000);
+}
+
+function drawLife(life)
+{
+	ctx.beginPath();
+	ctx.rect(20*x + 6, 20*y + 6, 8, 8);
+	ctx.fillStyle="red";
+	ctx.fill();
+	ctx.fillStyle="black";
+	ctx.stroke();
 }
 
 function drawPlayer(player){
 	ctx.beginPath();
-	ctx.arc(20*player.x + 10, 20*player.y + 10, 10, 0, 2*(Math.PI));
+	ctx.arc(20*player.x + 10, 20*player.y + 10, 9, 0, 2*(Math.PI));
 	ctx.fill();
 	ctx.fillStyle="black";
 	ctx.stroke();
@@ -74,31 +102,109 @@ function drawPlayer(player){
 	}
 	ctx.fill();
 };
-	
 
-function Tir(x,y,direction)
+function Shot(x,y,direction)
 {
 	this.x=x;
 	this.y=y;
+	this.oldx=x;
+	this.oldy=y;
 	this.direction = direction;
 }
 
-function moveTir()
+function drawShot(shot)
 {
-	return;
+	ctx.clearRect(20*shot.oldx + 5, 20*shot.oldy + 5, 10, 10);
+	ctx.beginPath();
+	ctx.fillStyle="black";
+	ctx.arc(20*shot.x + 10, 20*shot.y + 10, 4, 0, 2*(Math.PI));
+	ctx.fill();
 }
 
-//~ canvas.onclick = function(event)
-//~ {
-	//~ var data = getMousePos(canvas,event);
-	//~ createTire(data);
-//~ }
+function deleteShot(shot)
+{
+	ctx.clearRect(20*shot.x + 5, 20*shot.y + 5, 10, 10);
+}
 
-//~ function getMousePos(canvas, event)
-//~ {
-	//~ var rect = canvas.getBoundingClientRect();
-	//~ return {
-		//~ x: event.clientX - rect.left,
-		//~ y: event.clientY - rect.top
-	//~ };
-//~ }
+function moveShot(shot){
+	var x=0,y=0;
+	switch(shot.direction)
+	{
+		case 0: x=-1; break;
+		case 1: y=-1; break;
+		case 2: x=1; break;
+		case 3: y=1; break;
+		default: break;
+	}
+	var inter = setInterval(function(){
+		if(dataL.map[shot.x][shot.y] != 0)
+		{
+			if(!(shot.x + x < 0 || shot.x + x >= 40 || shot.y + y < 0 || shot.y + y >= 20))
+			{
+				if(dataL.map[shot.x + x][shot.y + y] == 0)
+				{
+					dataL.map[shot.x][shot.y] = 0;
+					shot.oldx = shot.x;
+					shot.oldy = shot.y;
+					shot.x+=x;
+					shot.y+=y;
+					dataL.map[shot.x][shot.y] = 1;
+					socket.emit('draw_shot',dataL.map,shot);
+				}
+				else if(dataL.map[shot.x + x][shot.y + y] instanceof Object)
+				{
+					dataL.map[shot.x][shot.y] = 0;
+					socket.emit('delete_shot',dataL.map,shot);
+					socket.emit('hit',dataL.map[shot.x + x][shot.y + y].id);
+					clearInterval(inter);
+				}
+				else if(dataL.map[shot.x + x][shot.y + y] == 1)
+				{
+					dataL.map[shot.x][shot.y] = 0;
+					dataL.map[shot.x + x][shot.y + y] = 0;
+					socket.emit('delete_shot',dataL.map,shot);
+					clearInterval(inter);
+				}
+			}
+			else
+			{
+				dataL.map[shot.x][shot.y] = 0;
+				socket.emit('delete_shot',dataL.map,shot);
+				clearInterval(inter);
+			}
+		}
+		else
+		{
+			socket.emit('delete_shot',dataL.map,shot);
+			clearInterval(inter);
+		}
+	},10);
+};
+
+function createShot(player)
+{
+	var x=0,y=0;
+	switch(player.direction)
+	{
+		case 0: x=-1; break;
+		case 1: y=-1; break;
+		case 2: x=1; break;
+		case 3: y=1; break;
+	}
+	if(!(player.x + x < 0 || player.x + x >= 40 || player.y + y < 0 || player.y + y >= 20))
+	{
+		if(dataL.map[player.x + x][player.y + y] == 0)
+		{
+			var shot = new Shot(player.x + x,player.y + y,player.direction);
+			moveShot(shot);
+		}
+		else if(dataL.map[player.x + x][player.y + y] instanceof Object)
+		{
+			socket.emit('hit',dataL.map[player.x + x][player.y + y].id);
+		}
+		else if(dataL.map[player.x + x][player.y + y] == 1)
+		{
+			dataL.map[player.x + x][player.y + y] = 0;
+		}
+	}	
+}
