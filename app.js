@@ -10,11 +10,6 @@ var modules = require("./gameplay.js");
 var map = new modules.Map();
 
 var allClients = [];
-var immunities = [];
-
-var objects;
-//~ modules.Immunity(map);
-modules.Life(map);
 
 io.sockets.on('connection', function(socket){
 	allClients.push(socket);
@@ -27,6 +22,7 @@ io.sockets.on('connection', function(socket){
 	socket.on('reponse',function(playerL){
 		player = playerL;
 		socket.player = player;
+		io.emit('update_map',map);
 		io.emit('update_screen',player);
 	});
 	
@@ -36,6 +32,10 @@ io.sockets.on('connection', function(socket){
 		map = data.map;
 		io.emit('update_map',map);
 		io.emit('update_screen',player);
+	});
+	
+	socket.on('modify_map',function(data){
+		map = data.map;
 	});
 	
 	socket.on('update_player',function(data){
@@ -58,6 +58,7 @@ io.sockets.on('connection', function(socket){
 	
 	socket.on('delete_shot',function(mapL,shot){
 		map = mapL;
+		io.emit('update_map',map);
 		io.emit('erase_shot',shot);
 	});
 	

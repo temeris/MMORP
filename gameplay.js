@@ -44,15 +44,6 @@ function Player(x,y)
 	this.name="";
 };
 
-module.exports.Immunity = function() 
-{
-	if(immunity_on_map == true) return false;
-	setTimout(function(){
-		
-	},30000);
-	clearTimout();
-}
-
 module.exports.Life = function(map)
 {
 	var timerLife = setInterval(function(){
@@ -67,7 +58,7 @@ module.exports.Life = function(map)
 	},3000);
 }
 
-function drawLife(life)
+function drawLife(x,y)
 {
 	ctx.beginPath();
 	ctx.rect(20*x + 6, 20*y + 6, 8, 8);
@@ -137,74 +128,68 @@ function moveShot(shot){
 		default: break;
 	}
 	var inter = setInterval(function(){
-		if(dataL.map[shot.x][shot.y] != 0)
+		if(!(shot.x + x < 0 || shot.x + x >= 40 || shot.y + y < 0 || shot.y + y >= 20))
 		{
-			if(!(shot.x + x < 0 || shot.x + x >= 40 || shot.y + y < 0 || shot.y + y >= 20))
-			{
-				if(dataL.map[shot.x + x][shot.y + y] == 0)
-				{
-					dataL.map[shot.x][shot.y] = 0;
-					shot.oldx = shot.x;
-					shot.oldy = shot.y;
-					shot.x+=x;
-					shot.y+=y;
-					dataL.map[shot.x][shot.y] = 1;
-					socket.emit('draw_shot',dataL.map,shot);
-				}
-				else if(dataL.map[shot.x + x][shot.y + y] instanceof Object)
-				{
-					dataL.map[shot.x][shot.y] = 0;
-					socket.emit('delete_shot',dataL.map,shot);
-					socket.emit('hit',dataL.map[shot.x + x][shot.y + y].id);
-					clearInterval(inter);
-				}
-				else if(dataL.map[shot.x + x][shot.y + y] == 1)
-				{
-					dataL.map[shot.x][shot.y] = 0;
-					dataL.map[shot.x + x][shot.y + y] = 0;
-					socket.emit('delete_shot',dataL.map,shot);
-					clearInterval(inter);
-				}
-			}
-			else
+			if(dataL.map[shot.x + x][shot.y + y] == 0)
 			{
 				dataL.map[shot.x][shot.y] = 0;
+				shot.oldx = shot.x;
+				shot.oldy = shot.y;
+				shot.x+=x;
+				shot.y+=y;
+				dataL.map[shot.x][shot.y] = 1;
+				socket.emit('draw_shot',dataL.map,shot);
+			}
+			else if(dataL.map[shot.x + x][shot.y + y] instanceof Object)
+			{
+				dataL.map[shot.x][shot.y] = 0;
+				socket.emit('delete_shot',dataL.map,shot);
+				socket.emit('hit',dataL.map[shot.x + x][shot.y + y].id);
+				clearInterval(inter);
+			}
+			else if(dataL.map[shot.x + x][shot.y + y] == 1)
+			{
+				dataL.map[shot.x][shot.y] = 0;
+				dataL.map[shot.x + x][shot.y + y] = 0;
 				socket.emit('delete_shot',dataL.map,shot);
 				clearInterval(inter);
 			}
 		}
 		else
 		{
+			dataL.map[shot.x][shot.y] = 0;
 			socket.emit('delete_shot',dataL.map,shot);
 			clearInterval(inter);
 		}
-	},10);
+		socket.emit('modify_map',dataL);
+	},20);
 };
 
-function createShot(player)
+function createShot(data)
 {
 	var x=0,y=0;
-	switch(player.direction)
+	switch(data.player.direction)
 	{
 		case 0: x=-1; break;
 		case 1: y=-1; break;
 		case 2: x=1; break;
 		case 3: y=1; break;
 	}
-	if(!(player.x + x < 0 || player.x + x >= 40 || player.y + y < 0 || player.y + y >= 20))
+	if(!(data.player.x + x < 0 || data.player.x + x >= 40 || data.player.y + y < 0 || data.player.y + y >= 20))
 	{
-		if(dataL.map[player.x + x][player.y + y] == 0)
+		if(data.map[data.player.x + x][data.player.y + y] == 0)
 		{
-			var shot = new Shot(player.x + x,player.y + y,player.direction);
+			data.map[data.player.x + x][data.player.y + y] = 1;
+			var shot = new Shot(data.player.x + x,data.player.y + y,data.player.direction);
 			moveShot(shot);
 		}
-		else if(dataL.map[player.x + x][player.y + y] instanceof Object)
+		else if(data.map[data.player.x + x][data.player.y + y] instanceof Object)
 		{
-			socket.emit('hit',dataL.map[player.x + x][player.y + y].id);
+			socket.emit('hit',data.map[data.player.x + x][data.player.y + y].id);
 		}
-		else if(dataL.map[player.x + x][player.y + y] == 1)
+		else if(data.map[data.player.x + x][data.player.y + y] == 1)
 		{
-			dataL.map[player.x + x][player.y + y] = 0;
+			data.map[data.player.x + x][data.player.y + y] = 0;
 		}
 	}	
 }

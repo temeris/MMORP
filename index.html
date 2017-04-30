@@ -27,17 +27,6 @@
 				
 				socket.on('update_map',function(map){
 					dataL.map = map;
-					var i,j;
-					for(i=0;i<40;i++)
-					{
-						for(j=0;j<20;j++)
-						{
-							if(dataL.map[i][j] == 2)
-							{
-								drawLife();
-							}
-						}
-					}
 				});
 				
 				socket.on('update_screen', function(player){
@@ -82,10 +71,11 @@
 				
 				document.onkeydown = function(event)
 				{
+					socket.emit('update_objects');
 					var key_pressed;
 					var x = 0, y = 0;
 					var direction;
-					if(dataL.player) direction = dataL.player.direction;
+					if(dataL) direction = dataL.player.direction;
 					else direction = 2;
 					if(event == null){
 						key_pressed = window.event.keyCode;
@@ -122,7 +112,17 @@
 						}
 						case 32:
 						{
-							createShot(dataL.player);
+							createShot(dataL);
+							for(i=0;i<40;i++)
+							{
+								for(j=0;j<20;j++)
+								{
+									if(dataL.map[i][j] != 0)
+									{
+										console.log('map[',i,'][',j,'] = ',dataL.map[i][j]);
+									}
+								}
+							}
 							break;
 						}
 						default :
