@@ -21,7 +21,6 @@ Marcher sur une vie en ayant toute sa vie n'aura aucun effet sur l'objet, celui 
     * Affichage sur la carte.
     * Déplacement sur la carte et affichage de la direction.
     * Tir.
-    * Rammassage des objets vies et immunité.
     * Collision avec les autres joueurs.
     * Santé du joueur
   
@@ -35,7 +34,7 @@ Marcher sur une vie en ayant toute sa vie n'aura aucun effet sur l'objet, celui 
   Une map contenant des obstacles et des graphismes ( avec des tilesets par exemple ) aurait été apprécié.
   D'autres objets afin d'améliorer le gameplay ( pourquoi pas un super Tir qui tirerai de tout les côtés pendant X secondes par exemple )
   Instaurer un sytème de chargeur pour l'arme ( Par exemple 10 balles par chargeur et possibilité de recharger ) avec un nombre de balles limité et des caisses de munitions.
-  
+  Instaurer des objets vies, immunités et balles tueuses
 ## Comment installer le jeu
 
 Une fois avoir récuperer tout les fichiers, ouvrez un terminal et placez-vous dans le répertoire contenant les fichiers du jeu.
@@ -54,5 +53,8 @@ Nous possédons 3 fichiers, index.html, app.js et gameplay.js.
 La page html ne contient que des fonctions réalisées côté client, et app.js ne contient que des fonctions réalisée côté serveur.
 Gameplay.js contient des fonctions qui sont utilisées des deux côtés. Nous évitons au maximum d'exécuter du code du côté serveur afin d'éviter les ralentissements.
 
-La map, les personnages présents sur le jeu ainsi que leur position sont stockés du côté du serveur. Le serveur envoi à chaque client ses données. Chaque fois qu'un client effectue une action ( tir, déplacement ), il envoit les nouvelles données au serveur via socket.io qui se chargera de modifier les informations et de les envoyés à tous les clients.
+La map, les personnages présents sur le jeu ainsi que leur position sont stockés du côté du serveur. Le serveur envoie à chaque client ses données. Chaque fois qu'un client effectue une action ( tir, déplacement ), il envoit les nouvelles données au serveur via socket.io qui se chargera de modifier les informations et de les envoyés à tous les clients.
 Le serveur ne s'occupe donc que de mémoriser les coordonnées de chaque joueur et des tirs, l'affichage se fait du côté client.
+
+## Sources
+ http://www.demonixis.net/blog/un-micro-fps-en-javascript-avec-babylonjs/
