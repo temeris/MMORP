@@ -23,6 +23,7 @@ Marcher sur une vie en ayant toute sa vie n'aura aucun effet sur l'objet, celui 
     * Tir.
     * Rammassage des objets vies et immunité.
     * Collision avec les autres joueurs.
+    * Santé du joueur
   
  * Côté multijoueur
     * Connexion simultanée de joueurs
@@ -33,7 +34,6 @@ Marcher sur une vie en ayant toute sa vie n'aura aucun effet sur l'objet, celui 
  
   Une map contenant des obstacles et des graphismes ( avec des tilesets par exemple ) aurait été apprécié.
   D'autres objets afin d'améliorer le gameplay ( pourquoi pas un super Tir qui tirerai de tout les côtés pendant X secondes par exemple )
- Afficher la barre de vie en bas à gauche de l'écran.
   Instaurer un sytème de chargeur pour l'arme ( Par exemple 10 balles par chargeur et possibilité de recharger ) avec un nombre de balles limité et des caisses de munitions.
   
 ## Comment installer le jeu
