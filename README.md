@@ -52,6 +52,10 @@ Gameplay.js contient des fonctions qui sont utilisées des deux côtés. Nous é
 La map, les personnages présents sur le jeu ainsi que leur position sont stockés du côté du serveur. Le serveur envoie à chaque client ses données ainsi que la map. Chaque fois qu'un client effectue une action ( tir, déplacement ), il envoie les nouvelles données au serveur via socket.io qui se chargera de modifier les informations et de les envoyer à tous les clients.
 Le serveur s'occupe alors de mémoriser toutes les informations reçu et de faire les liaisons entre les différents joueurs, l'affichage se fait du côté client.
 
+## Problèmes rencontrés
+
+Au final, nous avons remarqué certains problèmes liés à l'execution des tirs. C'est un problème assez complexe qui pour être corrigé demande à revoir l'intégralité de notre structure de données. Créer un objet "tir", et le gérer dans une structure de données différentes des joueurs, aurait été plus pratique, et aurait évité certains problèmes: le jeu pense qu'un joueur ne peut pas se déplacer dans une case, car un tir a modifié la propriété de la case.
+
 ## Sources
  http://www.demonixis.net/blog/un-micro-fps-en-javascript-avec-babylonjs/    
  https://www.w3schools.com/    
