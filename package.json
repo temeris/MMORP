@@ -14,7 +14,6 @@
 		]
 		"dependencies": {
 			"express": "4.15.X",
-			"http": "0.7.x",
-			
+			"http": "0.7.x"
 		}
 }
