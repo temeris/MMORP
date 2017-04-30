@@ -12,7 +12,7 @@
 				"email": "tim.bm@hotmail.fr"
 			}
 		]
-		"dependencies": {
+		"dependencies":{
 			"express": "4.15.X",
 			"http": "0.7.x"
 		}
