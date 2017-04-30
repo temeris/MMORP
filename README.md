@@ -14,10 +14,9 @@ Marcher sur une vie en ayant toute sa vie n'aura aucun effet sur l'objet, celui 
 
 ### Fonctions implémentées
 
-1. Création de la map
+* Création de la map
    * Génération des objets vie et immunité
-
-2. Personnage
+* Personnage
     * Choix du pseudo
     * Affichage sur la carte.
     * Déplacement sur la carte et affichage de la direction.
@@ -25,9 +24,13 @@ Marcher sur une vie en ayant toute sa vie n'aura aucun effet sur l'objet, celui 
     * Rammassage des objets vies et immunité.
     * Collision avec les autres joueurs.
   
-  3. Côté multijoueur
-    ..* Connexion simultanée de joueurs
-    ..* Gestion de la connexion / deconnexion d'un joueur ( Apparition / Dispiration d'un joueur )
-    ..* Renvoi les données à tous pour chaque action d'un client
+ * Côté multijoueur
+    * Connexion simultanée de joueurs
+    * Gestion de la connexion / deconnexion d'un joueur ( Apparition / Dispiration d'un joueur )
+    * Renvoi les données à tous pour chaque action d'un client
     
-  ### Fonction
+ ### Fonctions non implémentées
+ 
+  Une map contenant des obstacles
+  Des graphismes pour la map ( avec des tilesets par exemple ) 
+  
