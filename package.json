@@ -1,0 +1,20 @@
+{
+		"name": "Jeu-de-Tir",
+		"version": "0.1.0",
+		"description":"Jeu de Tir massivement multijoueur utilisant Node Js",
+		"contributors":[
+			{
+				"name": "BONOMINI Romain",
+				"email": "romain.bonomini@gmail.com"
+			},
+			{
+				"name": "BERTHOD Timothée",
+				"email": "tim.bm@hotmail.fr"
+			}
+		]
+		"dependencies": {
+			"express": "4.15.X",
+			"http": "0.7.x",
+			
+		}
+}
