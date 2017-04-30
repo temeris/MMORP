@@ -5,11 +5,11 @@
 		"contributors":[
 			{
 				"name": "BONOMINI Romain",
-				"email": "romain.bonomini@gmail.com"
+				"email": ["romain.bonomini@gmail.com","romain.bonomini@etu.univ-amu.fr"]
 			},
 			{
 				"name": "BERTHOD Timothée",
-				"email": "tim.bm@hotmail.fr"
+				"email": ["tim.bm@hotmail.fr","timothee.berthod@etu.univ-amu.fr"]
 			}
 		],
 		"dependencies": {
