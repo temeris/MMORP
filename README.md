@@ -15,15 +15,15 @@ Marcher sur une vie en ayant toute sa vie n'aura aucun effet sur l'objet, celui 
 ### Fonctions implémentées
 
 1. Création de la map
-  ..* Génération des objets vie et immunité
+  * Génération des objets vie et immunité
 
 2. Personnage
-  ..* Choix du pseudo
-  ..* Affichage sur la carte.
-  ..* Déplacement sur la carte et affichage de la direction.
-  ..* Tir.
-  ..* Rammassage des objets vies et immunité.
-  ..* Collision avec les autres joueurs.
+  * Choix du pseudo
+  * Affichage sur la carte.
+  * Déplacement sur la carte et affichage de la direction.
+  * Tir.
+  * Rammassage des objets vies et immunité.
+  * Collision avec les autres joueurs.
   
   3. Côté multijoueur
     ..* Connexion simultanée de joueurs
