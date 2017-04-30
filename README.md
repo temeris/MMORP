@@ -1,4 +1,4 @@
-#<center> Shoot Them All</center>
+# Shoot Them All
 
 Ce jeu est un jeu de tir multijoueur où les joueurs s'affrontent sur une petite carte.
 
