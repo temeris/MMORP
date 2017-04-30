@@ -1,4 +1,4 @@
-# Shoot.io
+# OneLastManStand.io
 
 Ce jeu est un jeu de tir multijoueur où les joueurs s'affrontent sur une petite carte.
 
