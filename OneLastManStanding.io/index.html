@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+
+<html>
+	<head>
+		<title>Projet Web2</title>
+		<meta charset="utf-8"/>
+		<link rel="stylesheet" type="text/css" href="/test.css"/>
+		<script type="text/javascript" src="/gameplay.js"></script>
+	</head>
+
+	<body>
+        <script src="/socket.io/socket.io.js"></script>
+		<h1 style="text-align:center">OneLastManStanding.io</h1>
+		<canvas id="myCanvas" width="800" height="400">	</canvas>
+
+		<div id="content">
+			<div id="health_content">
+				<h1> Santé </h1>
+				<canvas id="BarreDeVie" width="250" height="20"> </canvas>
+			</div>
+
+			<div id="Contenu-Droite">
+				<h2 id="Phrase"> </h2>
+			</div>
+		</div>
+		<script>
+			var socket = io.connect('http://localhost:8080');
+			var canvas = document.getElementById('myCanvas');
+			var ctx = canvas.getContext("2d");
+			
+			var vie = document.getElementById('BarreDeVie');
+			var ctx2 = vie.getContext("2d");
+
+			var dataL;
+			var shotsL = [];
+			socket.on('launch', function(data){
+				dataL=data;
+				dataL.player.name = prompt("Pseudo ?");
+				document.getElementById('Phrase').innerHTML="Bienvenue "+ data.player.name + ", vous êtes le joueur bleu";
+				AfficherVie(dataL);
+				socket.emit('reponse',dataL.player);
+			});
+			
+			socket.on('update_map',function(map){
+				dataL.map = map;
+			});
+			
+			socket.on('update_screen', function(player){
+				if(player) ctx.clearRect(20*player.oldx, 20*player.oldy, 20, 20);
+				socket.emit('send_update');
+				
+			});
+			
+			socket.on('delete_player_from_screen', function(map,player){
+				dataL.map = map;
+				if(player.x && player.y) ctx.clearRect(20*player.x, 20*player.y, 20, 20);
+			});
+			
+			socket.on('delete_player_dataL',function(){
+				dataL.player = null;
+			});
+			
+			socket.on('update_my_position', function(player){
+				ctx.fillStyle="blue";
+				if(player) 
+				{
+					drawPlayer(player);
+				}
+			});
+			socket.on('update_my_position_for_others', function(player){
+				ctx.fillStyle="red";
+				if(player) drawPlayer(player);
+			});
+			
+			socket.on('show_shot',function(shot){
+				if(shot) drawShot(shot);
+			});
+			
+			socket.on('hit_player',function(){
+				dataL.player.health -= 1;
+				AfficherVie(dataL);
+				socket.emit('update_player',dataL);
+				if(dataL.player.health <= 0)
+				{
+					socket.emit('player_dead',dataL.player)
+				}
+			});
+			
+			socket.on('erase_shot',function(shot){
+				if(shot) deleteShot(shot);
+			});
+			
+			document.onkeydown = function(event)
+			{
+				socket.emit('update_objects');
+				var key_pressed;
+				var x = 0, y = 0;
+				var direction;
+				if(dataL) direction = dataL.player.direction;
+				else direction = 2;
+				if(event == null){
+					key_pressed = window.event.keyCode;
+				}
+				else
+				{
+					key_pressed =  event.keyCode || event.which;
+				}
+				switch(key_pressed)
+				{
+					case 37:
+					{
+						x = -1;
+						direction = 0;
+						break;
+					}
+					case 38:
+					{
+						y = -1;
+						direction = 1;
+						break;
+					}
+					case 39:
+					{
+						x = 1;
+						direction = 2;
+						break;
+					}
+					case 40:
+					{
+						y = 1;
+						direction = 3;
+						break;
+					}
+					case 32:
+					{
+						createShot(dataL);
+						break;
+					}
+					default :
+					{
+						break;
+					}
+				}
+				if(dataL.player.direction == direction)
+				{
+					if(!(dataL.player.x + x < 0 || dataL.player.x + x >= 40 || dataL.player.y + y < 0 || dataL.player.y + y >= 20)) 
+					{
+						if(dataL.map[dataL.player.x + x][dataL.player.y + y] == 0)
+						{
+							dataL.map[dataL.player.x][dataL.player.y] = 0;
+							dataL.player.oldx = dataL.player.x;
+							dataL.player.oldy = dataL.player.y;
+							dataL.player.x += x;
+							dataL.player.y += y;
+							dataL.map[dataL.player.x][dataL.player.y] = dataL.player;
+							socket.emit('move',dataL);
+						}
+					}
+				}
+				else if(dataL.player.direction != direction)
+				{
+					dataL.player.direction = direction;
+					socket.emit('move',dataL);
+				}
+			}
+
+			function AfficherVie(dataL){
+				ctx2.clearRect(0,0,250,20);
+				switch(dataL.player.health)
+				{
+					case 3:
+					{
+						ctx2.fillStyle="green";
+						ctx2.fillRect(0,0,250,20);
+						break;
+					}
+					case 2:
+					{
+						ctx2.fillStyle="orange";
+						ctx2.fillRect(0,0,160,20);
+						break;
+					}
+					case 1:
+					{
+						ctx2.fillStyle="red";
+						ctx2.fillRect(0,0,30,20);
+						break;
+					}
+				}
+						
+			}
+		</script>
+	</body>
+</html>
