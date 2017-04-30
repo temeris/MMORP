@@ -11,7 +11,7 @@
 				"name": "BERTHOD Timothée",
 				"email": "tim.bm@hotmail.fr"
 			}
-		]
+		],
 		"dependencies": {
 			"express": "4.15.X",
 			"http": "0.7.x"
